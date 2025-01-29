@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Todo extends Model
+class UserVerify extends Model
 {
     use HasFactory;
 
-    protected $table = "todo";
-
+    protected $table = 'password_reset_tokens';
+    
     protected $fillable = [
-      'task', 'is_done', 'user_id'  
+        'email', 'token'
     ];
+
+    const UPDATED_AT = null;
 }

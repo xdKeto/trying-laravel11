@@ -5,6 +5,7 @@ namespace App\Http\Controllers\todo;
 use App\Http\Controllers\Controller;
 use App\Models\Todo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TodoController extends Controller
 {
@@ -13,12 +14,14 @@ class TodoController extends Controller
      */
     public function index()
     {
+        // echo auth()->user()->name;
         $max_data = 5;
 
         if (request('search')){
-            $data = Todo::where('task', 'like', '%'.request('search').'%')->paginate($max_data)->withQueryString();
+            $data = Todo::where('task', 'like', '%'.request('search').'%')->where('user_id', Auth::user()->id)
+            ->orderBy('task', 'asc')->paginate($max_data)->withQueryString();
         }else{
-            $data = Todo::orderBy('task', 'asc')->paginate($max_data);
+            $data = Todo::orderBy('task', 'asc')->where('user_id', Auth::user()->id)->paginate($max_data);
             
         }
         
@@ -46,7 +49,8 @@ class TodoController extends Controller
         ]);
 
         $data = [
-          'task' => $request->input('task')  
+          'task' => $request->input('task'), 
+          'user_id' => Auth::user()->id 
         ];
 
         Todo::create(
@@ -89,7 +93,7 @@ class TodoController extends Controller
             'is_done' => $request->input('is_done')
           ];
 
-        Todo::where('id', $id)->update($data);
+        Todo::where('id', $id)->where('user_id', Auth::user()->id)->update($data);
           
          return redirect()->route('todo')->with('success', 'Berhasil update data'); 
          
@@ -100,7 +104,7 @@ class TodoController extends Controller
      */
     public function destroy(string $id)
     {
-        Todo::where('id', $id)->delete();
+        Todo::where('id', $id)->where('user_id', Auth::user()->id)->delete();
 
         return redirect()->route('todo')->with('success', 'Berhasil menghapus data'); 
     }
